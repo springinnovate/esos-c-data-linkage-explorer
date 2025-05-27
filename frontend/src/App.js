@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 function App() {
   const [highlighted, setHighlighted] = useState(null);
   const [selected, setSelected] = useState(null);
   const [hasSelection, setHasSelection] = useState(false);
+  const [datasets, setDatasets] = useState([]);
 
   const imgWidth = 701;
   const imgHeight = 711;
@@ -22,6 +24,9 @@ function App() {
   const handleClick = (section) => {
     setSelected(section);
     setHasSelection(true);
+    axios.get('http://localhost:5000/datasets')
+      .then(response => setDatasets(response.data))
+      .catch(error => console.error('Error fetching datasets:', error));
   };
 
   return (
@@ -82,6 +87,10 @@ function App() {
           {selected}
         </div>)
       }
+      <div style={{ marginTop: '20px', textAlign: 'left' }}>
+        <h3>Datasets from backend:</h3>
+        <pre>{JSON.stringify(datasets, null, 2)}</pre>
+      </div>
     </div>
   );
 }

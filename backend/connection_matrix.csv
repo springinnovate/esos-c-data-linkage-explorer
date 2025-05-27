@@ -1,0 +1,39 @@
+﻿ecosystem_service,quadrant,layer,crop production,nutrient production,nature-based recreation capacity,nature-based recration importance,nutrient retention efficiency,avoided nutrient export,carbon density,avoided sediment export
+pollination,quality_of_life,Farmer income,1,1,0,0,0,0,0,0
+pollination,quality_of_life,Number of people fed,1,1,0,0,0,0,0,0
+pollination,landscape,land cover / land use,1,1,1,1,1,1,1,1
+pollination,landscape,total pollinator-dependent crop (area),1,1,0,0,0,0,0,0
+pollination,ecosystem_service,nutrient production,1,1,0,0,0,0,0,0
+pollination,ecosystem_service,crop production,1,1,0,0,0,0,0,0
+pollination,gap,Number of people fed gap,1,1,0,0,0,0,0,0
+pollination,gap,Farmer income gap,1,1,0,0,0,0,0,0
+recreation,landscape,Proximity to water features,0,0,1,1,0,0,0,0
+recreation,landscape,Mountain ruggedness,0,0,1,1,0,0,0,1
+recreation,landscape,population density,0,0,1,1,0,0,0,0
+recreation,landscape,road density,0,0,1,1,0,0,0,0
+recreation,ecosystem_service,nature-based recreation capacity,0,0,1,1,0,0,0,0
+recreation,ecosystem_service,nature-based recration importance,0,0,1,1,0,0,0,0
+recreation,management,protected areas,0,0,1,1,0,0,0,0
+recreation,management,land ownership,0,0,1,1,0,0,0,0
+nutrient retention,ecosystem_service,nutrient retention efficiency,0,0,0,0,1,1,0,0
+nutrient retention,ecosystem_service,avoided nutrient export,0,0,0,0,1,1,0,0
+nutrient retention,landscape,nutrient load,1,1,0,0,1,1,0,0
+nutrient retention,landscape,Topography,0,0,1,1,1,1,1,1
+nutrient retention,landscape,Rainfall,1,1,0,0,1,1,0,1
+nutrient retention,landscape,Watershed boundaries,0,0,0,0,1,1,0,1
+nutrient retention,management,Fertilizer application,1,1,0,0,1,1,0,0
+carbon storage,landscape,vegetation biomass,1,0,0,0,0,0,1,0
+carbon storage,landscape,Soil carbon stock,1,0,0,0,0,0,1,0
+carbon storage,ecosystem_service,Carbon density,1,0,0,0,0,0,1,0
+sediment retention,landscape,Soil type,1,0,0,0,1,1,1,1
+sediment retention,landscape,Watershed boundaries,0,0,0,0,1,1,0,1
+sediment retention,ecosystem_service,Avoided sediment export,0,0,0,0,0,0,0,1
+sediment retention,ecosystem_service,Sediment retention efficiency,0,0,0,0,0,0,0,1
+sediment retention,quality_of_life,Water quality,1,0,1,1,1,1,0,1
+flood regulation,ecosystem_service,Runoff retention,0,0,0,0,1,1,0,1
+flood regulation,demand,high risk flood areas,1,1,0,0,1,1,0,1
+freshwater provision,landscape,annual freshwater runoff,0,0,0,0,1,1,0,1
+freshwater provision,demand,municipal water consumption,0,0,0,0,1,1,0,1
+freshwater provision,demand,agricultural water consumption,1,1,0,0,1,1,1,1
+freshwater provision,demand,hydropower generation,0,0,0,0,0,0,0,1
+freshwater provision,demand,industrial activities,0,0,0,0,1,1,0,0

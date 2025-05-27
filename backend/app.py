@@ -1,13 +1,9 @@
 from flask import Flask, jsonify
-from models import db, Dataset
+import csv
 
 app = Flask(__name__)
 
-# Configure database (SQLite for simplicity)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db.init_app(app)
+DATASETS_CSV = "datasets.csv"
 
 
 @app.route("/")
@@ -17,8 +13,12 @@ def index():
 
 @app.route("/datasets")
 def get_datasets():
-    datasets = Dataset.query.all()
-    return jsonify([{"id": ds.id, "name": ds.name} for ds in datasets])
+    datasets = []
+    with open(DATASETS_CSV, newline="", encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            datasets.append({"id": int(row["id"]), "name": row["name"]})
+    return jsonify(datasets)
 
 
 if __name__ == "__main__":
