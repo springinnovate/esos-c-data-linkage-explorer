@@ -6,9 +6,19 @@ services:
       - "5000:5000"
     volumes:
       - ./backend:/app
+
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     ports:
-      - "3000:80"
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
+    environment:
+      - WATCHPACK_POLLING=true
+    stdin_open: true
+    tty: true

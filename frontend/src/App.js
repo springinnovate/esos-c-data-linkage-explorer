@@ -3,24 +3,45 @@ import React, { useState } from 'react';
 function App() {
   const [highlighted, setHighlighted] = useState(null);
   const [selected, setSelected] = useState(null);
+  const [hasSelection, setHasSelection] = useState(false);
+
+  const imgWidth = 701;
+  const imgHeight = 711;
+  const halfWidth = imgWidth / 2;
+  const halfHeight = imgHeight / 2;
 
   const sections = [
-    { id: 'Landscapes', color: '#F7CDAB', x: 0, y: 0 },
-    { id: 'Ecosystem Services', color: '#96CAA2', x: 251, y: 0 },
-    { id: 'Management', color: '#87B6B0', x: 0, y: 251 },
-    { id: 'Quality of Life', color: '#F4B8AB', x: 251, y: 251 },
+    { id: 'Landscapes', color: '#F7CDAB', x: 0, y: 0, width: halfWidth-1, height: halfHeight},
+    { id: 'Ecosystem Services', color: '#96CAA2', x: halfWidth, y: 0, width: halfWidth, height: halfHeight},
+    { id: 'Management', color: '#87B6B0', x: 0, y: halfHeight+1, width: halfWidth-1, height: halfHeight-1},
+    { id: 'Quality of Life', color: '#F4B8AB', x: halfWidth, y: halfHeight+1, width: halfWidth, height: halfHeight-1},
   ];
 
   const handleMouseEnter = (section) => setHighlighted(section);
   const handleMouseLeave = () => setHighlighted(null);
-  const handleClick = (section) => setSelected(section);
+  const handleClick = (section) => {
+    setSelected(section);
+    setHasSelection(true);
+  };
 
   return (
     <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <svg width="502" height="502">
-          {sections.map(({ id, color, x, y }) => {
-            const strokeWidth = highlighted === id ? 2 : selected === id ? 4 : 0;
+        <svg width={imgWidth} height={imgHeight}>
+          <image
+            href={`${process.env.PUBLIC_URL}/linkage_graphic.png`}
+            x="0"
+            y="0"
+            width={imgWidth}
+            height={imgHeight}
+          />
+          {sections.map(({ id, color, x, y, width, height }) => {
+            const strokeWidth = selected === id ? 3 : highlighted === id ? 2 : 1;
             const offset = strokeWidth / 2;
+            const fillColor = hasSelection ?
+                selected === id ? 'rgba(0,0,0,0)' :
+                highlighted === id ? 'rgba(50,50,50,0.25)' :
+                    'rgba(50,50,50,0.75)'
+                    : 'rgba(0,0,0,0)';
             return (
                 <g key={id}
                    cursor="pointer"
@@ -31,18 +52,17 @@ function App() {
                   <rect
                     x={x + offset}
                     y={y + offset}
-                    width={250 - strokeWidth}
-                    height={250 - strokeWidth}
-                    fill={color}
+                    width={width - strokeWidth}
+                    height={height - strokeWidth}
                     stroke="#333"
+                    fill={fillColor}
                     strokeWidth={strokeWidth}
                   />
 
                   {/* Text Label centered */}
-                  <text
-                    x={x + 125}
-                    y={y + 125}
-                    fill="#000"
+{/*                  <text
+                    x={x + width/2}
+                    y={y + height/2}
                     fontSize="16"
                     fontWeight={selected === id ? "bold": "normal"}
                     textAnchor="middle"
@@ -50,7 +70,7 @@ function App() {
                     pointerEvents="none"
                   >
                     {id}
-                  </text>
+                  </text>*/}
 
                 </g>
                 )
@@ -59,13 +79,9 @@ function App() {
         </svg>
       {selected && (
         <div style={{ marginTop: '20px', fontSize: '18px', fontWeight: 'bold' }}>
-          You clicked on: {selected}
+          {selected}
         </div>)
       }
-        <div>
-          Hovered: {highlighted || 'none'} | Selected: {selected || 'none'}
-        </div>
-
     </div>
   );
 }
