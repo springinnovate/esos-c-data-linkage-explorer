@@ -5,7 +5,7 @@ function App() {
   const [highlighted, setHighlighted] = useState(null);
   const [selected, setSelected] = useState(null);
   const [hasSelection, setHasSelection] = useState(false);
-  const [datasets, setDatasets] = useState([]);
+  const [queriedLayers, setQueriedLayers] = useState([]);
 
   const imgWidth = 701;
   const imgHeight = 711;
@@ -13,10 +13,10 @@ function App() {
   const halfHeight = imgHeight / 2;
 
   const sections = [
-    { id: 'Landscapes', color: '#F7CDAB', x: 0, y: 0, width: halfWidth-1, height: halfHeight},
-    { id: 'Ecosystem Services', color: '#96CAA2', x: halfWidth, y: 0, width: halfWidth, height: halfHeight},
-    { id: 'Management', color: '#87B6B0', x: 0, y: halfHeight+1, width: halfWidth-1, height: halfHeight-1},
-    { id: 'Quality of Life', color: '#F4B8AB', x: halfWidth, y: halfHeight+1, width: halfWidth, height: halfHeight-1},
+    { id: 'landscape', color: '#F7CDAB', x: 0, y: 0, width: halfWidth-1, height: halfHeight},
+    { id: 'ecosystem_service', color: '#96CAA2', x: halfWidth, y: 0, width: halfWidth, height: halfHeight},
+    { id: 'gap', color: '#87B6B0', x: 0, y: halfHeight+1, width: halfWidth-1, height: halfHeight-1},
+    { id: 'quality_of_life', color: '#F4B8AB', x: halfWidth, y: halfHeight+1, width: halfWidth, height: halfHeight-1},
   ];
 
   const handleMouseEnter = (section) => setHighlighted(section);
@@ -24,11 +24,14 @@ function App() {
   const handleClick = (section) => {
     setSelected(section);
     setHasSelection(true);
-    axios.get('http://localhost:5000/datasets')
-      .then(response => setDatasets(response.data))
+    axios.get(`http://localhost:5000/datasets?quadrant=${section}`)
+      .then(response => {
+        const layers = response.data.filter(item => item.quadrant === section);
+        console.log(layers);
+        setQueriedLayers(layers);
+      })
       .catch(error => console.error('Error fetching datasets:', error));
   };
-
   return (
     <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <svg width={imgWidth} height={imgHeight}>
@@ -63,34 +66,49 @@ function App() {
                     fill={fillColor}
                     strokeWidth={strokeWidth}
                   />
-
-                  {/* Text Label centered */}
-{/*                  <text
-                    x={x + width/2}
-                    y={y + height/2}
-                    fontSize="16"
-                    fontWeight={selected === id ? "bold": "normal"}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    pointerEvents="none"
-                  >
-                    {id}
-                  </text>*/}
-
                 </g>
                 )
             }
         )}
         </svg>
-      {selected && (
-        <div style={{ marginTop: '20px', fontSize: '18px', fontWeight: 'bold' }}>
-          {selected}
-        </div>)
-      }
-      <div style={{ marginTop: '20px', textAlign: 'left' }}>
-        <h3>Datasets from backend:</h3>
-        <pre>{JSON.stringify(datasets, null, 2)}</pre>
-      </div>
+      <table style={{  margin: '20px auto', textAlign: 'center', marginTop: '20px' }}>
+        <thead>
+          <tr>
+            <th>Ecosystem Service</th>
+            <th>Layer</th>
+            <th>Crop Prod.</th>
+            <th>Nutrient Prod.</th>
+            <th>Rec. Capacity</th>
+            <th>Rec. Importance</th>
+            <th>Nutrient Eff.</th>
+            <th>Nutrient Export</th>
+            <th>Carbon Density</th>
+            <th>Sediment Export</th>
+          </tr>
+        </thead>
+        <tbody>
+          {queriedLayers.map(layer => (
+            <tr key={layer.layer}>
+              <td>{layer.ecosystem_service}</td>
+              <td>{layer.layer}</td>
+              {[
+                'crop production',
+                'nutrient production',
+                'nature-based recreation capacity',
+                'nature-based recration importance',
+                'nutrient retention efficiency',
+                'avoided nutrient export',
+                'carbon density',
+                'avoided sediment export'
+              ].map(attr => (
+                <td key={attr} style={{textAlign: 'center', backgroundColor: layer[attr] === '1' ? '#c8e6c9' : '#ffcdd2'}}>
+                  {layer[attr] === '1' ? '✓' : 'x'}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
