@@ -207,7 +207,7 @@ function App() {
                     key={attr}
                     style={{ textAlign: 'center', backgroundColor: layer[attr] === '1' ? '#c8e6c9' : '#ffcdd2' }}
                   >
-                    {layer[attr] === '1' ? '✓' : '✘'}
+                    {layer[attr] === '1' ? '✓' : 'x'}
                   </td>
                 ))}
               </tr>
