@@ -6,6 +6,7 @@ const IMG_HEIGHT = 711;
 const LABEL_HEIGHT = 50;
 const HALF_W = IMG_WIDTH / 2;
 const HALF_H = IMG_HEIGHT / 2;
+const VIEWBOX_HEIGHT = IMG_HEIGHT + LABEL_HEIGHT * 2;
 
 const ATTRIBUTE_HEADERS = {
   'crop production': 'Crop Prod.',
@@ -24,17 +25,18 @@ function App() {
   const [highlighted, setHighlighted] = useState(null);
   const [selected, setSelected] = useState(new Set());
   const [layers, setLayers] = useState([]);
+  const [scale] = useState(0.5);
 
   const figureQuads = useMemo(() => ([
-    { id: 'landscape',         x: 0,       y: 0,          w: HALF_W - 1, h: HALF_H },
-    { id: 'ecosystem_service', x: HALF_W,  y: 0,          w: HALF_W,     h: HALF_H },
-    { id: 'management',        x: 0,       y: HALF_H + 1, w: HALF_W - 1, h: HALF_H - 1 },
-    { id: 'quality_of_life',   x: HALF_W,  y: HALF_H + 1, w: HALF_W,     h: HALF_H - 1 }
+    { id: 'landscape', x: 0, y: 0, w: HALF_W - 1, h: HALF_H },
+    { id: 'ecosystem_service', x: HALF_W, y: 0, w: HALF_W, h: HALF_H },
+    { id: 'management', x: 0, y: HALF_H + 1, w: HALF_W - 1, h: HALF_H - 1 },
+    { id: 'quality_of_life', x: HALF_W, y: HALF_H + 1, w: HALF_W, h: HALF_H - 1 }
   ]), []);
 
   const sideQuads = useMemo(() => ([
-    { id: 'gap',    label: 'Gap',    x: 0, y: -LABEL_HEIGHT,      w: IMG_WIDTH, h: LABEL_HEIGHT, color: '#F5E6A9' },
-    { id: 'demand', label: 'Demand', x: 0, y: IMG_HEIGHT,         w: IMG_WIDTH, h: LABEL_HEIGHT, color: '#CBB8E8' }
+    { id: 'gap', label: 'Gap', x: 0, y: -LABEL_HEIGHT, w: IMG_WIDTH, h: LABEL_HEIGHT, color: '#F5E6A9' },
+    { id: 'demand', label: 'Demand', x: 0, y: IMG_HEIGHT, w: IMG_WIDTH, h: LABEL_HEIGHT, color: '#CBB8E8' }
   ]), []);
 
   const quads = useMemo(() => [...figureQuads, ...sideQuads], [figureQuads, sideQuads]);
@@ -68,7 +70,12 @@ function App() {
 
   return (
     <div style={{ textAlign: 'center', marginTop: 20 }}>
-      <svg width={IMG_WIDTH} height={IMG_HEIGHT + LABEL_HEIGHT * 2}>
+      <svg
+        viewBox={`0 0 ${IMG_WIDTH} ${VIEWBOX_HEIGHT}`}
+        width={IMG_WIDTH * scale}
+        height={VIEWBOX_HEIGHT * scale}
+        style={{ display: 'block', margin: '0 auto' }}
+      >
         <g transform={`translate(0, ${LABEL_HEIGHT})`}>
           <image
             href={`${process.env.PUBLIC_URL}/linkage_graphic.png`}
