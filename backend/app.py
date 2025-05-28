@@ -17,19 +17,17 @@ def index():
 
 @app.route("/datasets")
 def get_datasets():
-    query_params = request.args.to_dict()
-    if not query_params:
-        return (
-            jsonify({"error": "Please provide at least one query parameter"}),
-            400,
-        )
+    query_params = {}
+    for key in request.args.keys():
+        values = request.args.getlist(key)
+        query_params[key.replace("[]", "")] = values
     print(f"query params: {query_params}")
     datasets = []
     with open(DATASETS_CSV, newline="", encoding="utf-8-sig") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
             if all(
-                row.get(key) == value for key, value in query_params.items()
+                row.get(key) in values for key, values in query_params.items()
             ):
                 datasets.append(row)
 

@@ -1,39 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function App() {
   const [highlighted, setHighlighted] = useState(null);
-  const [selected, setSelected] = useState(null);
-  const [hasSelection, setHasSelection] = useState(false);
-  const [queriedLayers, setQueriedLayers] = useState([]);
+  const [selectedQuadrants, setSelectedQuadrants] = useState(new Set());
+  const [activeLayers, setActiveLayers] = useState([]);
 
   const imgWidth = 701;
   const imgHeight = 711;
   const halfWidth = imgWidth / 2;
   const halfHeight = imgHeight / 2;
+  const attributeFields = [
+    'crop production',
+    'nutrient production',
+    'nature-based recreation capacity',
+    'nature-based recration importance',
+    'nutrient retention efficiency',
+    'avoided nutrient export',
+    'carbon density',
+    'avoided sediment export'
+  ];
+  const clickableColumns = ['ecosystem_service', 'quadrant', 'layer'];
 
-  const sections = [
-    { id: 'landscape', color: '#F7CDAB', x: 0, y: 0, width: halfWidth-1, height: halfHeight},
-    { id: 'ecosystem_service', color: '#96CAA2', x: halfWidth, y: 0, width: halfWidth, height: halfHeight},
-    { id: 'gap', color: '#87B6B0', x: 0, y: halfHeight+1, width: halfWidth-1, height: halfHeight-1},
-    { id: 'quality_of_life', color: '#F4B8AB', x: halfWidth, y: halfHeight+1, width: halfWidth, height: halfHeight-1},
+  const figureQuadrants = [
+    { quadrantId: 'landscape', color: '#F7CDAB', x: 0, y: 0, width: halfWidth-1, height: halfHeight},
+    { quadrantId: 'ecosystem_service', color: '#96CAA2', x: halfWidth, y: 0, width: halfWidth, height: halfHeight},
+    { quadrantId: 'gap', color: '#87B6B0', x: 0, y: halfHeight+1, width: halfWidth-1, height: halfHeight-1},
+    { quadrantId: 'quality_of_life', color: '#F4B8AB', x: halfWidth, y: halfHeight+1, width: halfWidth, height: halfHeight-1},
   ];
 
-  const fetchData = (params) => {
+  useEffect(() => {
+    fetchDataAndUpdateQuadrants({});
+  }, []);
+
+  const fetchDataAndUpdateQuadrants = (params) => {
     axios.get('http://localhost:5000/datasets', { params })
-      .then(response => setQueriedLayers(response.data))
-      .catch(error => console.error('Error fetching datasets:', error));
+      .then(response => {
+        setActiveLayers(response.data);
+
+        // Automatically update selectedQuadrants based on fetched data
+        const quadrantsFromData = new Set(response.data.map(item => item.quadrant));
+        setSelectedQuadrants(quadrantsFromData);
+      }).catch(error => console.error('Error fetching datasets:', error));
   };
 
-  const handleMouseEnter = (section) => setHighlighted(section);
-  const handleMouseLeave = () => setHighlighted(null);
-  const handleClick = (section) => {
-    setSelected(section);
-    setHasSelection(true);
-    fetchData({ quadrant: section });
-  };
-const handleColumnClick = (key, value) => {
-    fetchData({[key]: value});
+  const handleQuadrantMouseEnter = (section) => setHighlighted(section);
+  const handleQuadrantMouseLeave = () => setHighlighted(null);
+  const handleQuadrantClick = (quadrantId) => {
+      const updatedQuadrants = new Set(selectedQuadrants);
+      if (updatedQuadrants.has(quadrantId)) {
+        updatedQuadrants.delete(quadrantId);
+      } else {
+        updatedQuadrants.add(quadrantId);
+      }
+
+      setSelectedQuadrants(updatedQuadrants);
+      fetchDataAndUpdateQuadrants({ quadrant: Array.from(updatedQuadrants) });
+    };
+  const handleTableClick = (key, value) => {
+    fetchDataAndUpdateQuadrants({[key]: value});
   };
   return (
     <div style={{ textAlign: 'center', marginTop: '20px' }}>
@@ -45,27 +70,29 @@ const handleColumnClick = (key, value) => {
             width={imgWidth}
             height={imgHeight}
           />
-          {sections.map(({ id, color, x, y, width, height }) => {
-            const strokeWidth = selected === id ? 3 : highlighted === id ? 2 : 1;
+          {figureQuadrants.map(({ quadrantId, color, x, y, width, height }) => {
+            const strokeWidth = selectedQuadrants.has(quadrantId) ? 3 : highlighted === quadrantId ? 2 : 1;
             const offset = strokeWidth / 2;
-            const fillColor = hasSelection ?
-                selected === id ? 'rgba(0,0,0,0)' :
-                highlighted === id ? 'rgba(50,50,50,0.25)' :
-                    'rgba(50,50,50,0.75)'
-                    : 'rgba(0,0,0,0)';
+            const fillColor = selectedQuadrants.size > 0
+                ? selectedQuadrants.has(quadrantId)
+                  ? 'rgba(0,0,0,0)'
+                  : highlighted === quadrantId
+                    ? 'rgba(50,50,50,0.25)'
+                    : 'rgba(50,50,50,0.75)'
+                : 'rgba(0,0,0,0)';
             return (
-                <g key={id}
+                <g key={quadrantId}
                    cursor="pointer"
-                   onMouseEnter={() => handleMouseEnter(id)}
-                   onMouseLeave={handleMouseLeave}
-                   onClick={() => handleClick(id)}>
+                   onMouseEnter={() => handleQuadrantMouseEnter(quadrantId)}
+                   onMouseLeave={handleQuadrantMouseLeave}
+                   onClick={() => handleQuadrantClick(quadrantId)}>
 
                   <rect
                     x={x + offset}
                     y={y + offset}
                     width={width - strokeWidth}
                     height={height - strokeWidth}
-                    stroke="#333"
+                    stroke="#34416E"
                     fill={fillColor}
                     strokeWidth={strokeWidth}
                   />
@@ -91,36 +118,18 @@ const handleColumnClick = (key, value) => {
           </tr>
         </thead>
         <tbody>
-          {queriedLayers.map(layer => (
+          {activeLayers.map(layer => (
             <tr key={`${layer.ecosystem_service}-${layer.quadrant}-${layer.layer}`}>
-              <td
-                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
-                onClick={() => handleColumnClick('ecosystem_service', layer.ecosystem_service)}
-              >
-                {layer.ecosystem_service}
-              </td>
-              <td
-                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
-                onClick={() => handleColumnClick('quadrant', layer.quadrant)}
-              >
-                {layer.quadrant}
-              </td>
-              <td
-                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
-                onClick={() => handleColumnClick('layer', layer.layer)}
-              >
-                {layer.layer}
-              </td>
-              {[
-                'crop production',
-                'nutrient production',
-                'nature-based recreation capacity',
-                'nature-based recration importance',
-                'nutrient retention efficiency',
-                'avoided nutrient export',
-                'carbon density',
-                'avoided sediment export'
-              ].map(attr => (
+              {clickableColumns.map((col) => (
+                <td
+                  key={col}
+                  style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
+                  onClick={() => handleTableClick(col, layer[col])}
+                >
+                  {layer[col]}
+                </td>
+              ))}
+              {attributeFields.map(attr => (
                 <td key={attr} style={{textAlign: 'center', backgroundColor: layer[attr] === '1' ? '#c8e6c9' : '#ffcdd2'}}>
                   {layer[attr] === '1' ? '✓' : 'x'}
                 </td>
