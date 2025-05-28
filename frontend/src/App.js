@@ -23,11 +23,19 @@ function App() {
   const clickableColumns = ['ecosystem_service', 'quadrant', 'layer'];
 
   const figureQuadrants = [
-    { quadrantId: 'landscape', color: '#F7CDAB', x: 0, y: 0, width: halfWidth-1, height: halfHeight},
-    { quadrantId: 'ecosystem_service', color: '#96CAA2', x: halfWidth, y: 0, width: halfWidth, height: halfHeight},
-    { quadrantId: 'gap', color: '#87B6B0', x: 0, y: halfHeight+1, width: halfWidth-1, height: halfHeight-1},
-    { quadrantId: 'quality_of_life', color: '#F4B8AB', x: halfWidth, y: halfHeight+1, width: halfWidth, height: halfHeight-1},
+    { quadrantId: 'landscape', color: null, x: 0, y: 0, width: halfWidth-1, height: halfHeight},
+    { quadrantId: 'ecosystem_service', color: null, x: halfWidth, y: 0, width: halfWidth, height: halfHeight},
+    { quadrantId: 'management', color: null, x: 0, y: halfHeight+1, width: halfWidth-1, height: halfHeight-1},
+    { quadrantId: 'quality_of_life', color: null, x: halfWidth, y: halfHeight+1, width: halfWidth, height: halfHeight-1}
   ];
+  const quadHeight = 50;
+
+  const sideQuadrants = [
+    { quadrantId: 'gap', label: 'Gap', x: 0, y: -quadHeight, width: imgWidth, height: quadHeight, color: '#F5E6A9'},
+    { quadrantId: 'demand', label: 'Demand', x: 0, y: imgHeight, width: imgWidth, height: quadHeight, color: '#CBB8E8' },
+  ];
+
+  const totalSvgHeight = imgHeight + quadHeight * 2;
 
   useEffect(() => {
     fetchDataAndUpdateQuadrants({});
@@ -62,25 +70,31 @@ function App() {
   };
   return (
     <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <svg width={imgWidth} height={imgHeight}>
-          <image
-            href={`${process.env.PUBLIC_URL}/linkage_graphic.png`}
-            x="0"
-            y="0"
-            width={imgWidth}
-            height={imgHeight}
-          />
-          {figureQuadrants.map(({ quadrantId, color, x, y, width, height }) => {
-            const strokeWidth = selectedQuadrants.has(quadrantId) ? 3 : highlighted === quadrantId ? 2 : 1;
-            const offset = strokeWidth / 2;
-            const fillColor = selectedQuadrants.size > 0
-                ? selectedQuadrants.has(quadrantId)
+        <svg width={imgWidth} height={totalSvgHeight}>
+          <g transform={`translate(0, ${quadHeight})`}>
+            <image
+              href={`${process.env.PUBLIC_URL}/linkage_graphic.png`}
+              x="0"
+              y="0"
+              width={imgWidth}
+              height={imgHeight}
+            />
+
+            {[...figureQuadrants, ...sideQuadrants].map(({ quadrantId, color, label, x, y, width, height }) => {
+              const isSelected = selectedQuadrants.has(quadrantId);
+              const isHighlighted = highlighted === quadrantId;
+              const strokeWidth = isSelected ? 3 : isHighlighted ? 2 : 1;
+              const offset = strokeWidth / 2;
+              const fillColor =
+                selectedQuadrants.size === 0
                   ? 'rgba(0,0,0,0)'
-                  : highlighted === quadrantId
-                    ? 'rgba(50,50,50,0.25)'
-                    : 'rgba(50,50,50,0.75)'
-                : 'rgba(0,0,0,0)';
-            return (
+                  : isSelected
+                  ? (color ?? 'rgba(0,0,0,0)')
+                  : isHighlighted
+                  ? 'rgba(50,50,50,0.25)'
+                  : 'rgba(50,50,50,0.75)';
+
+              return (
                 <g key={quadrantId}
                    cursor="pointer"
                    onMouseEnter={() => handleQuadrantMouseEnter(quadrantId)}
@@ -96,10 +110,23 @@ function App() {
                     fill={fillColor}
                     strokeWidth={strokeWidth}
                   />
+
+                  {label && (
+                    <text
+                      x={x + width / 2}
+                      y={y + height / 2}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fill="#000"
+                      style={{ userSelect: 'none', pointerEvents: 'none', fontWeight: 'bold', fontSize: '20px' }}
+                    >
+                      {label}
+                    </text>
+                  )}
                 </g>
-                )
-            }
-        )}
+              );
+            })}
+          </g>
         </svg>
       <table style={{  margin: '20px auto', textAlign: 'center', marginTop: '20px' }}>
         <thead>
