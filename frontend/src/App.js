@@ -48,13 +48,13 @@ function App() {
   const quads = useMemo(() => [...figureQuads, ...sideQuads], [figureQuads, sideQuads])
 
   const fetchLayers = useCallback(params => {
-    axios.get('http://localhost:5000/datasets', { params })
+    axios.get('/datasets', { params })
       .then(({ data }) => {
-        setLayers(data)
-        setSelected(new Set(data.map(d => d.quadrant)))
+        setLayers(data);
+        setSelected(new Set(data.map(d => d.quadrant)));
       })
-      .catch(console.error)
-  }, [])
+      .catch(console.error);
+  }, []);
 
   useEffect(() => { fetchLayers({}) }, [fetchLayers])
 
