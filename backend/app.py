@@ -17,17 +17,22 @@ def index():
 
 @app.route("/datasets")
 def get_datasets():
-    quadrant = request.args.get("quadrant")
-    if not quadrant:
-        return jsonify({"error": "Please provide a 'quadrant' parameter"}), 400
-
+    query_params = request.args.to_dict()
+    if not query_params:
+        return (
+            jsonify({"error": "Please provide at least one query parameter"}),
+            400,
+        )
+    print(f"query params: {query_params}")
     datasets = []
     with open(DATASETS_CSV, newline="", encoding="utf-8-sig") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
-            print(f'{row["quadrant"]} vs {quadrant}')
-            if row["quadrant"] == quadrant:
-                datasets.append(row)  # Return the entire row as-is
+            if all(
+                row.get(key) == value for key, value in query_params.items()
+            ):
+                datasets.append(row)
+
     return jsonify(datasets)
 
 

@@ -19,18 +19,21 @@ function App() {
     { id: 'quality_of_life', color: '#F4B8AB', x: halfWidth, y: halfHeight+1, width: halfWidth, height: halfHeight-1},
   ];
 
+  const fetchData = (params) => {
+    axios.get('http://localhost:5000/datasets', { params })
+      .then(response => setQueriedLayers(response.data))
+      .catch(error => console.error('Error fetching datasets:', error));
+  };
+
   const handleMouseEnter = (section) => setHighlighted(section);
   const handleMouseLeave = () => setHighlighted(null);
   const handleClick = (section) => {
     setSelected(section);
     setHasSelection(true);
-    axios.get(`http://localhost:5000/datasets?quadrant=${section}`)
-      .then(response => {
-        const layers = response.data.filter(item => item.quadrant === section);
-        console.log(layers);
-        setQueriedLayers(layers);
-      })
-      .catch(error => console.error('Error fetching datasets:', error));
+    fetchData({ quadrant: section });
+  };
+const handleColumnClick = (key, value) => {
+    fetchData({[key]: value});
   };
   return (
     <div style={{ textAlign: 'center', marginTop: '20px' }}>
@@ -75,6 +78,7 @@ function App() {
         <thead>
           <tr>
             <th>Ecosystem Service</th>
+            <th>Quadrant</th>
             <th>Layer</th>
             <th>Crop Prod.</th>
             <th>Nutrient Prod.</th>
@@ -88,9 +92,25 @@ function App() {
         </thead>
         <tbody>
           {queriedLayers.map(layer => (
-            <tr key={layer.layer}>
-              <td>{layer.ecosystem_service}</td>
-              <td>{layer.layer}</td>
+            <tr key={`${layer.ecosystem_service}-${layer.quadrant}-${layer.layer}`}>
+              <td
+                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
+                onClick={() => handleColumnClick('ecosystem_service', layer.ecosystem_service)}
+              >
+                {layer.ecosystem_service}
+              </td>
+              <td
+                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
+                onClick={() => handleColumnClick('quadrant', layer.quadrant)}
+              >
+                {layer.quadrant}
+              </td>
+              <td
+                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
+                onClick={() => handleColumnClick('layer', layer.layer)}
+              >
+                {layer.layer}
+              </td>
               {[
                 'crop production',
                 'nutrient production',
