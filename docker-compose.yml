@@ -28,9 +28,9 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     expose:
-      - "3000"
+      - "80"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -38,7 +38,6 @@ services:
       - backend
     environment:
       - WATCHPACK_POLLING=true
-      - DANGEROUSLY_DISABLE_HOST_CHECK=true
     stdin_open: true
     tty: true
     labels:
