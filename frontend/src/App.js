@@ -1,144 +1,128 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
+
+const IMG_WIDTH = 701;
+const IMG_HEIGHT = 711;
+const LABEL_HEIGHT = 50;
+const HALF_W = IMG_WIDTH / 2;
+const HALF_H = IMG_HEIGHT / 2;
+
+const ATTRIBUTE_HEADERS = {
+  'crop production': 'Crop Prod.',
+  'nutrient production': 'Nutrient Prod.',
+  'nature-based recreation capacity': 'Rec. Capacity',
+  'nature-based recreation importance': 'Rec. Importance',
+  'nutrient retention efficiency': 'Nutrient Eff.',
+  'avoided nutrient export': 'Nutrient Export',
+  'carbon density': 'Carbon Density',
+  'avoided sediment export': 'Sediment Export'
+};
+
+const CLICKABLE_COLS = ['ecosystem_service', 'quadrant', 'layer'];
 
 function App() {
   const [highlighted, setHighlighted] = useState(null);
-  const [selectedQuadrants, setSelectedQuadrants] = useState(new Set());
-  const [activeLayers, setActiveLayers] = useState([]);
+  const [selected, setSelected] = useState(new Set());
+  const [layers, setLayers] = useState([]);
 
-  const imgWidth = 701;
-  const imgHeight = 711;
-  const halfWidth = imgWidth / 2;
-  const halfHeight = imgHeight / 2;
-  const attributeFieldHeaders = {
-    'crop production': 'Crop Prod.',
-    'nutrient production': 'Nutrient Prod.',
-    'nature-based recreation capacity': 'Rec. Capacity',
-    'nature-based recration importance': 'Rec. Importance',
-    'nutrient retention efficiency': 'Nutrient Eff.',
-    'avoided nutrient export': 'Nutrient Export',
-    'carbon density': 'Carbon Density',
-    'avoided sediment export': 'Sediment Export'
-  };
-  const clickableColumns = ['ecosystem_service', 'quadrant', 'layer'];
+  const figureQuads = useMemo(() => ([
+    { id: 'landscape',         x: 0,       y: 0,          w: HALF_W - 1, h: HALF_H },
+    { id: 'ecosystem_service', x: HALF_W,  y: 0,          w: HALF_W,     h: HALF_H },
+    { id: 'management',        x: 0,       y: HALF_H + 1, w: HALF_W - 1, h: HALF_H - 1 },
+    { id: 'quality_of_life',   x: HALF_W,  y: HALF_H + 1, w: HALF_W,     h: HALF_H - 1 }
+  ]), []);
 
-  const figureQuadrants = [
-    { quadrantId: 'landscape', color: null, x: 0, y: 0, width: halfWidth-1, height: halfHeight},
-    { quadrantId: 'ecosystem_service', color: null, x: halfWidth, y: 0, width: halfWidth, height: halfHeight},
-    { quadrantId: 'management', color: null, x: 0, y: halfHeight+1, width: halfWidth-1, height: halfHeight-1},
-    { quadrantId: 'quality_of_life', color: null, x: halfWidth, y: halfHeight+1, width: halfWidth, height: halfHeight-1}
-  ];
-  const quadHeight = 50;
+  const sideQuads = useMemo(() => ([
+    { id: 'gap',    label: 'Gap',    x: 0, y: -LABEL_HEIGHT,      w: IMG_WIDTH, h: LABEL_HEIGHT, color: '#F5E6A9' },
+    { id: 'demand', label: 'Demand', x: 0, y: IMG_HEIGHT,         w: IMG_WIDTH, h: LABEL_HEIGHT, color: '#CBB8E8' }
+  ]), []);
 
-  const sideQuadrants = [
-    { quadrantId: 'gap', label: 'Gap', x: 0, y: -quadHeight, width: imgWidth, height: quadHeight, color: '#F5E6A9'},
-    { quadrantId: 'demand', label: 'Demand', x: 0, y: imgHeight, width: imgWidth, height: quadHeight, color: '#CBB8E8' },
-  ];
+  const quads = useMemo(() => [...figureQuads, ...sideQuads], [figureQuads, sideQuads]);
 
-  const totalSvgHeight = imgHeight + quadHeight * 2;
-
-  useEffect(() => {
-    fetchDataAndUpdateQuadrants({});
+  const fetchLayers = useCallback(params => {
+    axios.get('http://localhost:5000/datasets', { params })
+      .then(({ data }) => {
+        setLayers(data);
+        setSelected(new Set(data.map(d => d.quadrant)));
+      })
+      .catch(console.error);
   }, []);
 
-  const fetchDataAndUpdateQuadrants = (params) => {
-    axios.get('http://localhost:5000/datasets', { params })
-      .then(response => {
-        setActiveLayers(response.data);
+  useEffect(() => { fetchLayers({}); }, [fetchLayers]);
 
-        // Automatically update selectedQuadrants based on fetched data
-        const quadrantsFromData = new Set(response.data.map(item => item.quadrant));
-        setSelectedQuadrants(quadrantsFromData);
-      }).catch(error => console.error('Error fetching datasets:', error));
+  const toggleQuadrant = id => {
+    const next = new Set(selected);
+    next.has(id) ? next.delete(id) : next.add(id);
+    setSelected(next);
+    fetchLayers({ quadrant: [...next] });
   };
 
-  const handleQuadrantMouseEnter = (section) => setHighlighted(section);
-  const handleQuadrantMouseLeave = () => setHighlighted(null);
-  const handleQuadrantClick = (quadrantId) => {
-      const updatedQuadrants = new Set(selectedQuadrants);
-      if (updatedQuadrants.has(quadrantId)) {
-        updatedQuadrants.delete(quadrantId);
-      } else {
-        updatedQuadrants.add(quadrantId);
-      }
-
-      setSelectedQuadrants(updatedQuadrants);
-      fetchDataAndUpdateQuadrants({ quadrant: Array.from(updatedQuadrants) });
-    };
-  const handleTableClick = (key, value) => {
-    fetchDataAndUpdateQuadrants({[key]: value});
+  const fillFor = (id, base) => {
+    if (selected.size === 0) return 'transparent';
+    if (selected.has(id)) return base ?? 'transparent';
+    return highlighted === id ? 'rgba(50,50,50,0.25)' : 'rgba(50,50,50,0.75)';
   };
+
+  const strokeFor = id =>
+    selected.has(id) ? 3 : highlighted === id ? 2 : 1;
+
   return (
-    <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <svg width={imgWidth} height={totalSvgHeight}>
-          <g transform={`translate(0, ${quadHeight})`}>
-            <image
-              href={`${process.env.PUBLIC_URL}/linkage_graphic.png`}
-              x="0"
-              y="0"
-              width={imgWidth}
-              height={imgHeight}
-            />
+    <div style={{ textAlign: 'center', marginTop: 20 }}>
+      <svg width={IMG_WIDTH} height={IMG_HEIGHT + LABEL_HEIGHT * 2}>
+        <g transform={`translate(0, ${LABEL_HEIGHT})`}>
+          <image
+            href={`${process.env.PUBLIC_URL}/linkage_graphic.png`}
+            width={IMG_WIDTH}
+            height={IMG_HEIGHT}
+          />
+          {quads.map(({ id, label, x, y, w, h, color }) => {
+            const stroke = strokeFor(id);
+            const off = stroke / 2;
+            return (
+              <g
+                key={id}
+                cursor='pointer'
+                onMouseEnter={() => setHighlighted(id)}
+                onMouseLeave={() => setHighlighted(null)}
+                onClick={() => toggleQuadrant(id)}
+              >
+                <rect
+                  x={x + off}
+                  y={y + off}
+                  width={w - stroke}
+                  height={h - stroke}
+                  stroke='#34416E'
+                  strokeWidth={stroke}
+                  fill={fillFor(id, color)}
+                />
+                {label && (
+                  <text
+                    x={x + w / 2}
+                    y={y + h / 2}
+                    textAnchor='middle'
+                    dominantBaseline='middle'
+                    style={{ userSelect: 'none', pointerEvents: 'none', fontWeight: 'bold', fontSize: 20 }}
+                  >
+                    {label}
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </g>
+      </svg>
 
-            {[...figureQuadrants, ...sideQuadrants].map(({ quadrantId, color, label, x, y, width, height }) => {
-              const isSelected = selectedQuadrants.has(quadrantId);
-              const isHighlighted = highlighted === quadrantId;
-              const strokeWidth = isSelected ? 3 : isHighlighted ? 2 : 1;
-              const offset = strokeWidth / 2;
-              const fillColor =
-                selectedQuadrants.size === 0
-                  ? 'rgba(0,0,0,0)'
-                  : isSelected
-                  ? (color ?? 'rgba(0,0,0,0)')
-                  : isHighlighted
-                  ? 'rgba(50,50,50,0.25)'
-                  : 'rgba(50,50,50,0.75)';
-
-              return (
-                <g key={quadrantId}
-                   cursor="pointer"
-                   onMouseEnter={() => handleQuadrantMouseEnter(quadrantId)}
-                   onMouseLeave={handleQuadrantMouseLeave}
-                   onClick={() => handleQuadrantClick(quadrantId)}>
-
-                  <rect
-                    x={x + offset}
-                    y={y + offset}
-                    width={width - strokeWidth}
-                    height={height - strokeWidth}
-                    stroke="#34416E"
-                    fill={fillColor}
-                    strokeWidth={strokeWidth}
-                  />
-
-                  {label && (
-                    <text
-                      x={x + width / 2}
-                      y={y + height / 2}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill="#000"
-                      style={{ userSelect: 'none', pointerEvents: 'none', fontWeight: 'bold', fontSize: '20px' }}
-                    >
-                      {label}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
-          </g>
-        </svg>
-      <table style={{  margin: '20px auto', textAlign: 'center', marginTop: '20px' }}>
+      <table style={{ margin: '20px auto', textAlign: 'center' }}>
         <thead>
           <tr>
             <th>Ecosystem Service</th>
             <th>Quadrant</th>
             <th>Layer</th>
-            {Object.entries(attributeFieldHeaders).map(([key, header]) => (
+            {Object.entries(ATTRIBUTE_HEADERS).map(([key, header]) => (
               <th
                 key={key}
                 style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
-                onClick={() => handleTableClick(key, '1')}
+                onClick={() => fetchLayers({ [key]: 1 })}
               >
                 {header}
               </th>
@@ -146,23 +130,26 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {activeLayers.map(layer => (
+          {layers.map(layer => (
             <tr key={`${layer.ecosystem_service}-${layer.quadrant}-${layer.layer}`}>
-              {clickableColumns.map((col) => (
+              {CLICKABLE_COLS.map(col => (
                 <td
                   key={col}
                   style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
-                  onClick={() => handleTableClick(col, layer[col])}
+                  onClick={() => fetchLayers({ [col]: layer[col] })}
                 >
                   {layer[col]}
                 </td>
               ))}
-              {Object.keys(attributeFieldHeaders).map(attr => (
+              {Object.keys(ATTRIBUTE_HEADERS).map(attr => (
                 <td
                   key={attr}
-                  style={{ textAlign: 'center', backgroundColor: layer[attr] === '1' ? '#c8e6c9' : '#ffcdd2' }}
+                  style={{
+                    textAlign: 'center',
+                    backgroundColor: layer[attr] === '1' ? '#c8e6c9' : '#ffcdd2'
+                  }}
                 >
-                  {layer[attr] === '1' ? '✓' : '✘'}
+                  {layer[attr] === '1' ? '✓' : 'x'}
                 </td>
               ))}
             </tr>
