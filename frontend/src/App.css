@@ -1,38 +1,116 @@
-.App {
-  text-align: center;
+/* App.css */
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #f8fafc;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.5;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+h3 {
+  margin: 0 0 .5rem;
+  font-weight: 600;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.container {
+  /*max-width: 1280px;*/
+  margin: 0 auto;
+  padding: 2rem 1rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.flex-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: flex-start;
+  gap: 2rem;
 }
 
-.App-link {
-  color: #61dafb;
+.info-card {
+  background: #fff;
+  border-radius: .75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  padding: 1.25rem 1.5rem;
+  min-width: 220px;
+  text-align: left;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.info-card table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+}
+
+.info-card th {
+  text-align: left;
+  font-weight: 500;
+  padding-right: .5rem;
+}
+
+.info-card td {
+  text-align: left;
+}
+
+.main-table-wrapper {
+  overflow-x: auto;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: .75rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+}
+
+.styled-table thead {
+  background: #1e3a8a;
+  color: #ffffff;
+  font-size: .875rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.styled-table thead .clickable,
+.styled-table thead .attr-btn {
+  color: #93c5fd;          /* light blue for contrast on deep blue */
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.styled-table thead .clickable:hover,
+.styled-table thead .attr-btn:hover {
+  color: #bfdbfe;
+  text-decoration: none;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: .75rem 1rem;
+  white-space: nowrap;
+}
+
+.styled-table tbody tr:nth-child(even) {
+  background: #f3f4f6;
+}
+
+.styled-table tbody tr:hover {
+  background: #e5e7eb;
+}
+
+.clickable {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #2563eb;
+}
+
+button.attr-btn {
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
 }

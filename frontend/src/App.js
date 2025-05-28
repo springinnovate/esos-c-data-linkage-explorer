@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import './App.css'
 import axios from 'axios'
 
 const IMG_WIDTH = 701
@@ -25,7 +26,6 @@ function App() {
   const [highlighted, setHighlighted] = useState(null)
   const [selected, setSelected] = useState(new Set())
   const [layers, setLayers] = useState([])
-  const [scale, setScale] = useState(0.25)
 
   const figureQuads = useMemo(
     () => [
@@ -79,11 +79,11 @@ function App() {
     [layers]
   )
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '20px auto' }}>
+   return (
+    <div className='container'>
 
       {/* Row 1: Info widget (right-justified) and Image */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'left', width: '100%' }}>
+      <div className='flex-row'>
 
         {/* Image widget */}
         <div style={{ textAlign: 'center', position: 'relative', width: IMG_WIDTH * 0.25, height: VIEWBOX_HEIGHT * 0.25 }}>
@@ -156,7 +156,7 @@ function App() {
 
 
         {/* Info widget, right-justified */}
-        <div style={{ minWidth: 200, marginLeft: 20, textAlign: 'right' }}>
+        <div className='info-card'>
           <h3>Selections</h3>
           <table>
             <tbody>
@@ -174,21 +174,19 @@ function App() {
       </div>
 
       {/* Row 2: Table, centered relative to the elements above */}
-      <div style={{ marginTop: 20 }}>
-        <table style={{ margin: '0 auto', textAlign: 'center' }}>
+      <div className='main-table-wrapper'>
+        <table className='styled-table'>
           <thead>
             <tr>
               <th>Ecosystem Service</th>
               <th>Quadrant</th>
               <th>Layer</th>
               {Object.entries(ATTRIBUTE_HEADERS).map(([key, header]) => (
-                <th
-                  key={key}
-                  style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
-                  onClick={() => fetchLayers({ [key]: 1 })}
-                >
+              <th key={key}>
+                <button className='attr-btn' onClick={() => fetchLayers({ [key]: 1 })}>
                   {header}
-                </th>
+                </button>
+              </th>
               ))}
             </tr>
           </thead>
@@ -198,7 +196,7 @@ function App() {
                 {CLICKABLE_COLS.map(col => (
                   <td
                     key={col}
-                    style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
+                    className='clickable'
                     onClick={() => fetchLayers({ [col]: layer[col] })}
                   >
                     {layer[col]}
