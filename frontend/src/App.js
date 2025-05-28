@@ -25,7 +25,7 @@ function App() {
   const [highlighted, setHighlighted] = useState(null)
   const [selected, setSelected] = useState(new Set())
   const [layers, setLayers] = useState([])
-  const [scale, setScale] = useState(1)
+  const [scale, setScale] = useState(0.25)
 
   const figureQuads = useMemo(
     () => [
@@ -83,28 +83,39 @@ function App() {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '20px auto' }}>
 
       {/* Row 1: Info widget (right-justified) and Image */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'left', width: '100%' }}>
 
         {/* Image widget */}
-        <div style={{ textAlign: 'center' }}>
-          <input
-            type='range'
-            min={0.1}
-            max={1}
-            step={0.1}
-            value={scale}
-            onChange={e => setScale(parseFloat(e.target.value))}
-            style={{ marginBottom: 10, width: 200 }}
-          />
-
+        <div style={{ textAlign: 'center', position: 'relative', width: IMG_WIDTH * 0.25, height: VIEWBOX_HEIGHT * 0.25 }}>
           <svg
             viewBox={`0 0 ${IMG_WIDTH} ${VIEWBOX_HEIGHT}`}
-            width={IMG_WIDTH * scale}
-            height={VIEWBOX_HEIGHT * scale}
-            style={{ display: 'block' }}
+            width={IMG_WIDTH}
+            height={VIEWBOX_HEIGHT}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              transformOrigin: 'top left',
+              transform: 'scale(0.25)',
+              transition: 'transform 0.05s ease-in-out',
+              cursor: 'pointer',
+              zIndex: 1,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.zIndex = 10;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(0.25)';
+              e.currentTarget.style.zIndex = 1;
+            }}
           >
             <g transform={`translate(0, ${LABEL_HEIGHT})`}>
-              <image href={`${process.env.PUBLIC_URL}/linkage_graphic.png`} width={IMG_WIDTH} height={IMG_HEIGHT} />
+              <image
+                href={`${process.env.PUBLIC_URL}/linkage_graphic.png`}
+                width={IMG_WIDTH}
+                height={IMG_HEIGHT}
+              />
               {quads.map(({ id, label, x, y, w, h, color }) => {
                 const stroke = strokeFor(id);
                 const off = stroke / 2;
@@ -142,6 +153,7 @@ function App() {
             </g>
           </svg>
         </div>
+
 
         {/* Info widget, right-justified */}
         <div style={{ minWidth: 200, marginLeft: 20, textAlign: 'right' }}>
