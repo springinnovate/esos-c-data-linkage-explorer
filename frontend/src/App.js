@@ -10,16 +10,16 @@ function App() {
   const imgHeight = 711;
   const halfWidth = imgWidth / 2;
   const halfHeight = imgHeight / 2;
-  const attributeFields = [
-    'crop production',
-    'nutrient production',
-    'nature-based recreation capacity',
-    'nature-based recration importance',
-    'nutrient retention efficiency',
-    'avoided nutrient export',
-    'carbon density',
-    'avoided sediment export'
-  ];
+  const attributeFieldHeaders = {
+    'crop production': 'Crop Prod.',
+    'nutrient production': 'Nutrient Prod.',
+    'nature-based recreation capacity': 'Rec. Capacity',
+    'nature-based recration importance': 'Rec. Importance',
+    'nutrient retention efficiency': 'Nutrient Eff.',
+    'avoided nutrient export': 'Nutrient Export',
+    'carbon density': 'Carbon Density',
+    'avoided sediment export': 'Sediment Export'
+  };
   const clickableColumns = ['ecosystem_service', 'quadrant', 'layer'];
 
   const figureQuadrants = [
@@ -107,14 +107,15 @@ function App() {
             <th>Ecosystem Service</th>
             <th>Quadrant</th>
             <th>Layer</th>
-            <th>Crop Prod.</th>
-            <th>Nutrient Prod.</th>
-            <th>Rec. Capacity</th>
-            <th>Rec. Importance</th>
-            <th>Nutrient Eff.</th>
-            <th>Nutrient Export</th>
-            <th>Carbon Density</th>
-            <th>Sediment Export</th>
+            {Object.entries(attributeFieldHeaders).map(([key, header]) => (
+              <th
+                key={key}
+                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
+                onClick={() => handleTableClick(key, '1')}
+              >
+                {header}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -129,9 +130,12 @@ function App() {
                   {layer[col]}
                 </td>
               ))}
-              {attributeFields.map(attr => (
-                <td key={attr} style={{textAlign: 'center', backgroundColor: layer[attr] === '1' ? '#c8e6c9' : '#ffcdd2'}}>
-                  {layer[attr] === '1' ? '✓' : 'x'}
+              {Object.keys(attributeFieldHeaders).map(attr => (
+                <td
+                  key={attr}
+                  style={{ textAlign: 'center', backgroundColor: layer[attr] === '1' ? '#c8e6c9' : '#ffcdd2' }}
+                >
+                  {layer[attr] === '1' ? '✓' : '✘'}
                 </td>
               ))}
             </tr>
