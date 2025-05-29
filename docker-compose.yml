@@ -22,8 +22,6 @@ services:
     build: ./backend
     expose:
       - "5000"
-    volumes:
-      - ./backend:/app
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`resnetdata.ecoshard.org`) && PathPrefix(`/datasets`)"
