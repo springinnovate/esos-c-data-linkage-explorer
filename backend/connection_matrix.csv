@@ -1,39 +1,39 @@
-﻿#comments,ecosystem_service,quadrant,layer,link to data,pollination,recreation,nutrient,carbon,sediment,flood,freshwater provision
-#net value of each wild-pollinator-dependent crop per metric tonne,pollination,quality_of_life,Farmer income,,4,3,0,0,0,0,0
-#,pollination,ecosystem_service,Number of people fed,,4,0,0,0,0,0,0
-#,pollination,landscape,land cover / land use,,1,1,1,1,1,1,1
-# isn't this the same as the demand variable? what's missing is the magnitude of dependence (which can vary from 5% to 95% of total yield),pollination,landscape,total pollinator-dependent crop (area),,1,0,0,0,0,0,0
-#ha of crop needing pollination,pollination,demand,ha of crop needing pollination,,1,0,3,0,0,3,0
-# this would presumably be per crop - which might be a large number of rasters I'm not sure you want,pollination,ecosystem_service,pollinated crop production,,,,,,,,
-#Insufficient # of people fed,pollination,gap,Insufficient pollination in terms of equivalent number of people fed gap,,4,0,0,0,0,0,0
-#difference between potential and realized production. loss of farmer income due to insufficient pollination,pollination,gap,Insufficient pollination in terms of farmer income,,4,3,0,0,0,0,0
-#,recreation,landscape,Proximity to water features,,0,1,0,0,0,2,0
-#,recreation,landscape,Mountain ruggedness,,0,1,0,0,1,1,1
-#reduces ES provision,recreation,landscape,population density,,0,1,2,0,2,0,0
-#reduces ES provision,recreation,landscape,road density,,0,1,2,0,2,0,0
-"#this is actually two things - the # of people AND what there is to visit/benefit from (described in methods as ""number and ability of people to visit each location and derive benefits"")",recreation,ecosystem_service,nature-based recreation capacity,,0,1,3,0,3,3,3
-#capacity * demand = importance of provision,recreation,ecosystem_service,nature-based recration importance,,3,1,3,0,3,3,3
-#,recreation,management,protected areas,,0,1,2,0,2,0,0
-#,recreation,management,land ownership,,3,1,2,0,2,0,0
-#,nutrient retention,ecosystem_service,nutrient retention efficiency,,0,0,4,0,0,3,0
-#,nutrient retention,ecosystem_service,avoided nutrient export,,0,3,4,0,0,3,0
-#,nutrient retention,landscape,nutrient load,,2,0,1,0,0,0,0
-#,nutrient retention,landscape,Topography,,0,1,1,2,1,1,1
-#,nutrient retention,landscape,Rainfall,,2,2,1,2,1,1,1
-#,nutrient retention,landscape,Watershed boundaries,,0,0,1,0,1,1,1
-#,nutrient retention,management,Fertilizer application,,2,0,1,0,0,0,0
-#,carbon storage,landscape,vegetation biomass,,2,0,2,1,2,2,2
-#,carbon storage,landscape,Soil carbon stock,,2,0,2,1,0,2,2
-#,carbon storage,ecosystem_service,Carbon density,,2,0,2,4,0,0,0
-#,sediment retention,landscape,Soil type,,2,0,2,1,1,1,1
-#,sediment retention,ecosystem_service,Avoided sediment export,,0,3,0,0,4,3,0
-#,sediment retention,ecosystem_service,Sediment retention efficiency,,0,0,0,0,4,3,0
-#,sediment retention,quality_of_life,Water quality,,0,1,1,0,*,3,0
-#,flood regulation,ecosystem_service,Runoff retention,,2,2,2,0,2,1,0
-#agriculture and built-up areas within floodplains (people and infrastructure),flood regulation,demand,people and infrastructure in flood areas,,0,0,0,0,0,1,0
-"# ""connected capacity to demand by analyzing hydrological connectivity, building on the methods of Ouellet Dallaire (2018)",freshwater provision,ecosystem_service,modelled annual freshwater runoff,,2,2,2,0,0,0,1
-#people living downstream in settlements >100 people,freshwater provision,demand,municipal water consumption,,0,0,3,0,*,0,1
-#agricultural surface area,freshwater provision,demand,agricultural water consumption,,2,0,0,0,*,0,1
-#number of dams,freshwater provision,demand,hydropower generation,,0,0,0,0,*,3,1
-"#number of industrial facilities, and thermal power stations present (NRC 2003, 2010).",freshwater provision,demand,industrial activities,,0,0,2,0,0,0,1
-"# layer called water capacity, used HydropSHEDs pixel level database (not publicly available)",freshwater provision,landscape,annual freshwater runoff,,2,2,2,0,0,0,1
+﻿#comments,quadrant,layer,link to data,pollination,recreation,nutrient,carbon,sediment,flood,freshwater provision
+#net value of each wild-pollinator-dependent crop per metric tonne,quality_of_life,Farmer income,,4,3,0,0,0,0,0
+#,ecosystem_service,Number of people fed,,4,0,0,0,0,0,0
+#,landscape,land cover / land use,,1,1,1,1,1,1,1
+# isn't this the same as the demand variable? what's missing is the magnitude of dependence (which can vary from 5% to 95% of total yield),landscape,total pollinator-dependent crop (area),,1,0,0,0,0,0,0
+#ha of crop needing pollination,demand,ha of crop needing pollination,,1,0,3,0,0,3,0
+# this would presumably be per crop - which might be a large number of rasters I'm not sure you want,ecosystem_service,pollinated crop production,,,,,,,,
+#Insufficient # of people fed,gap,Insufficient pollination in terms of equivalent number of people fed gap,,4,0,0,0,0,0,0
+#difference between potential and realized production. loss of farmer income due to insufficient pollination,gap,Insufficient pollination in terms of farmer income,,4,3,0,0,0,0,0
+#,landscape,Proximity to water features,,0,1,0,0,0,2,0
+#,landscape,Mountain ruggedness,,0,1,0,0,1,1,1
+#reduces ES provision,landscape,population density,,0,1,2,0,2,0,0
+#reduces ES provision,landscape,road density,,0,1,2,0,2,0,0
+"#this is actually two things - the # of people AND what there is to visit/benefit from (described in methods as ""number and ability of people to visit each location and derive benefits"")",ecosystem_service,nature-based recreation capacity,,0,1,3,0,3,3,3
+#capacity * demand = importance of provision,ecosystem_service,nature-based recration importance,,3,1,3,0,3,3,3
+#,management,protected areas,,0,1,2,0,2,0,0
+#,management,land ownership,,3,1,2,0,2,0,0
+#,ecosystem_service,nutrient retention efficiency,,0,0,4,0,0,3,0
+#,ecosystem_service,avoided nutrient export,,0,3,4,0,0,3,0
+#,landscape,nutrient load,,2,0,1,0,0,0,0
+#,landscape,Topography,,0,1,1,2,1,1,1
+#,landscape,Rainfall,,2,2,1,2,1,1,1
+#,landscape,Watershed boundaries,,0,0,1,0,1,1,1
+#,management,Fertilizer application,,2,0,1,0,0,0,0
+#,landscape,vegetation biomass,,2,0,2,1,2,2,2
+#,landscape,Soil carbon stock,,2,0,2,1,0,2,2
+#,ecosystem_service,Carbon density,,2,0,2,4,0,0,0
+#,landscape,Soil type,,2,0,2,1,1,1,1
+#,ecosystem_service,Avoided sediment export,,0,3,0,0,4,3,0
+#,ecosystem_service,Sediment retention efficiency,,0,0,0,0,4,3,0
+#,quality_of_life,Water quality,,0,1,1,0,*,3,0
+#,ecosystem_service,Runoff retention,,2,2,2,0,2,1,0
+#agriculture and built-up areas within floodplains (people and infrastructure),demand,people and infrastructure in flood areas,,0,0,0,0,0,1,0
+"# ""connected capacity to demand by analyzing hydrological connectivity, building on the methods of Ouellet Dallaire (2018)",ecosystem_service,modelled annual freshwater runoff,,2,2,2,0,0,0,1
+#people living downstream in settlements >100 people,demand,municipal water consumption,,0,0,3,0,*,0,1
+#agricultural surface area,demand,agricultural water consumption,,2,0,0,0,*,0,1
+#number of dams,demand,hydropower generation,,0,0,0,0,*,3,1
+"#number of industrial facilities, and thermal power stations present (NRC 2003, 2010).",demand,industrial activities,,0,0,2,0,0,0,1
+"# layer called water capacity, used HydropSHEDs pixel level database (not publicly available)",landscape,annual freshwater runoff,,2,2,2,0,0,0,1
