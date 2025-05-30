@@ -40,10 +40,6 @@ services:
       - /app/node_modules
     depends_on:
       - backend
-    environment:
-      - WATCHPACK_POLLING=true
-    stdin_open: true
-    tty: true
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`resnetdata.ecoshard.org`)"

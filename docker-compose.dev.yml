@@ -1,28 +1,15 @@
 services:
-  reverse-proxy:
-    image: traefik:v2.11
-    command:
-      - "--log.level=DEBUG"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entryPoints.web.address=:80"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    ports:
-      - "80:80"
-
   backend:
     build: ./backend
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=PathPrefix(`/datasets`)"
-      - "traefik.http.routers.backend.entrypoints=web"
-      - "traefik.http.services.backend.loadbalancer.server.port=5000"
+    expose:
+      - "5000"
+    ports:
+      - "5000:5000"
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -32,8 +19,5 @@ services:
       - WATCHPACK_POLLING=true
     stdin_open: true
     tty: true
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    ports:
+      - "3000:3000"
