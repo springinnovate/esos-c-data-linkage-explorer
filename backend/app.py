@@ -30,8 +30,16 @@ def get_datasets():
                 row.get(key) in values for key, values in query_params.items()
             ):
                 datasets.append(row)
-
-    return jsonify(datasets)
+    categories = [
+        "🌸 pollination 🐝",
+        "🌲 recreation 🚶‍♂️",
+        "🌱 nutrient ✨",
+        "🌳 carbon ☁️",
+        "🏞️ sediment 🪨",
+        "🌊 flood ⚠️",
+        "🚰 freshwater provision💧",
+    ]
+    return jsonify({"categories": categories, "datasets": datasets})
 
 
 if __name__ == "__main__":
